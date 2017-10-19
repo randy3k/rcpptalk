@@ -1,0 +1,34 @@
+---
+title: "Rcpp tutorial"
+author: "Randy Lai"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Who I am?
+
+- Randy Lai <chushing.lai@maine.edu>
+- a statistican
+- an R enthusiast
+- slides avaliable at http://github.com/randy3k/rcpptalk
+
+## Rcpp
+
+### What
+
+- Rcpp is an interface to C/C++ in R
+
+
+### Why
+
+
+
+
+## References:
+
+- http://gallery.rcpp.org
+- http://heather.cs.ucdavis.edu/~matloff/158/RcppTutorial.pdf
+- http://adv-r.had.co.nz/Rcpp.html
