@@ -85,7 +85,7 @@
 
 <body style="opacity: 0">
 
-<slides>
+<slides class="layout-widescreen">
 
   <slide class="title-slide segue nobackground">
         <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
@@ -96,12 +96,23 @@
           </hgroup>
   </slide>
 
-<slide class=''><hgroup><h2>Who I am?</h2></hgroup><article  id="who-i-am">
+<slide class=''><hgroup><h2>About me</h2></hgroup><article  id="about-me">
 
 <ul>
 <li>Randy Lai <a href='mailto:chushing.lai@maine.edu' title=''>chushing.lai@maine.edu</a></li>
-<li>a statistican</li>
+<li>a statistician</li>
 <li>an R enthusiast</li>
+<li>also in Python, Julia, a.k.a JuPyteR</li>
+<li>slides available at <a href='http://github.com/randy3k/rcpptalk' title=''>http://github.com/randy3k/rcpptalk</a></li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>About you</h2></hgroup><article  id="about-you">
+
+<p>I assume that you</p>
+
+<ul>
+<li>have enough experiences with R</li>
+<li>at least know how to read C/C++ code</li>
 </ul>
 
 </article></slide><slide class=''><hgroup><h2>Rcpp</h2></hgroup><article  id="rcpp">
@@ -110,16 +121,175 @@
 
 <ul>
 <li>Rcpp is an interface to C/C++ in R</li>
+<li>allow R user to write C/C++ code easily</li>
 </ul>
 
 <h3>Why</h3>
 
+<p>(quoted from Dirk Eddelbuettel, one of the authors of Rcpp)</p>
+
+<ul>
+<li>Speed, Performance</li>
+<li>Do things you could not do before</li>
+<li>Easy to extend R this way</li>
+</ul>
+
+<h3>How</h3>
+
+<ul>
+<li>only lead you to the entrance of Rcpp word, the rest is left to you</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Speed Example</h2></hgroup><article  id="speed-example">
+
+<p>Consider a function defined as</p>
+
+<p>\[
+f(n) = \begin{cases}
+n &amp; \text{ for } n \le 1\\
+f(n-1) + f(n-2) &amp; \text{ for } n \ge 2
+\end{cases}
+\]</p>
+
+<p>It is so called Fibonacci sequence</p>
+
+<pre class = 'prettyprint lang-r'>f &lt;- function(n) {
+  if (n &lt; 2) return(n) 
+  return(f(n-1) + f(n-2))
+}</pre>
+
+<pre class = 'prettyprint lang-r'>sapply(1:15, f)</pre>
+
+<pre >##  [1]   1   1   2   3   5   8  13  21  34  55  89 144 233 377 610</pre>
+
+</article></slide><slide class=''><hgroup><h2>Speed Example (continue)</h2></hgroup><article  id="speed-example-continue">
+
+<p>The equvilant C++ code is</p>
+
+<pre class = 'prettyprint lang-c'>int g(int n) { 
+  if (n &lt; 2) return(n); 
+  return(g(n-1) + g(n-2)); 
+}</pre>
+
+<p>The <code>Rcpp</code> function <code>cppFunction</code> deploys the C++ code as follows</p>
+
+<pre class = 'prettyprint lang-r'>library(Rcpp)
+cppFunction(&quot;
+    int g(int n) { 
+      if (n &lt; 2) return(n); 
+      return(g(n-1) + g(n-2)); 
+    }
+&quot;)</pre>
+
+<p>(we will discuss more about <code>cppFunction</code>)</p>
+
+</article></slide><slide class=''><hgroup><h2>Speed Example (continue 2)</h2></hgroup><article  id="speed-example-continue-2">
+
+<pre class = 'prettyprint lang-r'>library(rbenchmark)
+benchmark(f(20), g(20), 
+          columns = c(&quot;test&quot;, &quot;replications&quot;, &quot;elapsed&quot;, &quot;relative&quot;), 
+          order = &quot;relative&quot;)</pre>
+
+<pre >##    test replications elapsed relative
+## 2 g(20)          100   0.008     1.00
+## 1 f(20)          100   0.966   120.75</pre>
+
+<p>The C code is a few orders of magnitude faster then the R code.</p>
+
+</article></slide><slide class=''><hgroup><h2>Who uses Rcpp?</h2></hgroup><article  id="who-uses-rcpp">
+
+<p><img width="800" src="cran.png" /></p>
+
+</article></slide><slide class=''><hgroup><h2>Perquisites</h2></hgroup><article  id="perquisites">
+
+<ul>
+<li>RStudio</li>
+<li><p>Rcpp, of course</p>
+
+<pre >install.packages(&quot;Rcpp&quot;)</pre></li>
+<li>A C++ compiler
+
+<ul>
+<li><p>Windows: Rtools <br> <a href='https://cran.r-project.org/bin/windows/Rtools/' title=''>https://cran.r-project.org/bin/windows/Rtools/</a></p></li>
+<li><p>Mac: Xcode</p></li>
+<li><p>Linux: you know better than me</p></li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Two ways to use Rcpp</h2></hgroup><article  id="two-ways-to-use-rcpp">
+
+<ul>
+<li><p><code>cppFunction</code> defines an inline R function from C++ code</p>
+
+<pre class = 'prettyprint lang-r'>cppFunction(&quot;
+  int add(int x, int y, int z) {
+    int sum = x + y + z;
+    return sum;
+  }
+&quot;)</pre></li>
+<li><p><code>sourceCpp</code> loads specified c++ file</p></li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>The Rcpp Interface</h2></hgroup><article  id="the-rcpp-interface">
+
+<ul>
+<li>standard c/c++ types: <code>int</code>, <code>double</code>, <code>bool</code>, <code>std::string</code></li>
+<li>A generic representation: <code>SEXP</code></li>
+<li>Rcpp vector classes: <code>NumericVector</code>, <code>IntegerVector</code>, <code>LogicalVector</code> and <code>CharacterVector</code></li>
+<li>Rcpp matrix classes: <code>NumericMatrix</code>, <code>IntegerMatrix</code>, <code>LogicalMatrix</code> and <code>CharacterMatrix</code></li>
+<li>and more &#8230;</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Rcpp sugar</h2></hgroup><article  id="rcpp-sugar">
+
+<p>syntactic &quot;sugar&quot; to ensure that C++ functions work very similarly to their R equivalents.</p>
+
+<ul>
+<li>arithmetic and logical operators for vectors and matrices</li>
+<li>logical functions: <code>any()</code>, <code>all()</code>, <code>is_true()</code>, <code>is_false()</code></li>
+<li>math functions: <code>abs()</code>, <code>choose()</code>, <code>cos()</code>, <code>exp()</code>, <code>factorial()</code> and <code>floor()</code> etc</li>
+<li>stat functions: <code>mean()</code>, <code>min()</code>, <code>max()</code>, <code>sum()</code>, <code>sd()</code> and <code>var()</code> etc</li>
+<li><code>dnorm</code>, <code>qnorm</code>&#8230; for all standard distributions.</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>More examples</h2></hgroup><article  id="more-examples">
+
+<ul>
+<li>Scalar input, scalar output
+
+<ul>
+<li>the <code>add</code> function above</li>
+</ul></li>
+<li><p>Vector input, scalar output</p>
+
+<pre class = 'prettyprint lang-r'>cppFunction(&quot;
+  double sumC(NumericVector x) {
+    int n = x.size();
+    double total = 0;
+    for(int i = 0; i &lt; n; ++i) {
+      total += x[i];
+    }
+    return total;
+  }
+&quot;)</pre></li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Examples on sourceCpp</h2></hgroup><article  id="examples-on-sourcecpp">
+
+<p>RStudio provides a very continient interface to write C++ code.</p>
+
+<ul>
+<li><code>meanC.cpp</code></li>
+<li><code>timesTwo.cpp</code></li>
+</ul>
+
 </article></slide><slide class=''><hgroup><h2>References:</h2></hgroup><article  id="references">
 
 <ul>
-<li><a href='http://gallery.rcpp.org' title=''>http://gallery.rcpp.org</a></li>
-<li><a href='http://heather.cs.ucdavis.edu/~matloff/158/RcppTutorial.pdf' title=''>http://heather.cs.ucdavis.edu/~matloff/158/RcppTutorial.pdf</a></li>
 <li><a href='http://adv-r.had.co.nz/Rcpp.html' title=''>http://adv-r.had.co.nz/Rcpp.html</a></li>
+<li><a href='http://gallery.rcpp.org' title=''>http://gallery.rcpp.org</a></li>
+<li><a href='http://dirk.eddelbuettel.com/code/rcpp/Rcpp-quickref.pdf' title=''>http://dirk.eddelbuettel.com/code/rcpp/Rcpp-quickref.pdf</a></li>
+<li><a href='http://dirk.eddelbuettel.com/papers/useR2017_rcpp_tutorial.pdf' title=''>http://dirk.eddelbuettel.com/papers/useR2017_rcpp_tutorial.pdf</a></li>
 </ul></article></slide>
 
 
