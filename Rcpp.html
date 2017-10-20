@@ -137,7 +137,7 @@
 <h3>How</h3>
 
 <ul>
-<li>only lead you to the entrance of Rcpp word, the rest is left to you</li>
+<li>only lead you to the entrance of Rcpp world, the rest is left to you</li>
 </ul>
 
 </article></slide><slide class=''><hgroup><h2>Speed Example</h2></hgroup><article  id="speed-example">
@@ -191,8 +191,8 @@ benchmark(f(20), g(20),
           order = &quot;relative&quot;)</pre>
 
 <pre >##    test replications elapsed relative
-## 2 g(20)          100   0.008     1.00
-## 1 f(20)          100   0.966   120.75</pre>
+## 2 g(20)          100   0.005      1.0
+## 1 f(20)          100   0.701    140.2</pre>
 
 <p>The C code is a few orders of magnitude faster then the R code.</p>
 
@@ -281,6 +281,15 @@ benchmark(f(20), g(20),
 <ul>
 <li><code>meanC.cpp</code></li>
 <li><code>timesTwo.cpp</code></li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Other related packages</h2></hgroup><article  id="other-related-packages">
+
+<p>Very often, plain C/C++ doesn&#39;t provide enough mathematical functions, e.g. matrix inverse and eigen decomposition</p>
+
+<ul>
+<li><p>RcppArmadillo: a lightweight but powerful linear algebra library</p></li>
+<li><p>RcppEigen: another lightweight linear algebra library</p></li>
 </ul>
 
 </article></slide><slide class=''><hgroup><h2>References:</h2></hgroup><article  id="references">

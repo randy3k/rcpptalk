@@ -46,7 +46,7 @@ I assume that you
 
 ### How
 
-- only lead you to the entrance of Rcpp word, the rest is left to you
+- only lead you to the entrance of Rcpp world, the rest is left to you
 
 
 ## Speed Example
@@ -193,6 +193,14 @@ RStudio provides a very continient interface to write C++ code.
 - `meanC.cpp`
 - `timesTwo.cpp`
 
+
+## Other related packages
+
+Very often, plain C/C++ doesn't provide enough mathematical functions, e.g. matrix inverse and eigen decomposition
+
+- RcppArmadillo: a lightweight but powerful linear algebra library
+
+- RcppEigen: another lightweight linear algebra library
 
 ## References:
 
